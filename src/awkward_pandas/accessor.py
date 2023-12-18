@@ -7,6 +7,7 @@ import awkward as ak
 import pandas as pd
 
 from awkward_pandas.array import AwkwardExtensionArray
+from awkward_pandas.datetimes import DatetimeAccessor
 from awkward_pandas.dtype import AwkwardDtype
 from awkward_pandas.strings import StringAccessor
 
@@ -143,6 +144,10 @@ class AwkwardAccessor:
     def str(self) -> StringAccessor:
         return StringAccessor(self)
 
+    @property
+    def dt(self) -> DatetimeAccessor:
+        return DatetimeAccessor(self)
+
     def __getattr__(self, item):
         """Call awkward namespace function on a series"""
         # replace with concrete implementations of all top-level ak functions
@@ -184,8 +189,11 @@ class AwkwardAccessor:
         return result
 
     def __dir__(self) -> list[str]:
-        return [
-            _
-            for _ in (dir(ak))
-            if not _.startswith(("_", "ak_")) and not _[0].isupper()
-        ] + ["to_column"]
+        return sorted(
+            [
+                _
+                for _ in (dir(ak))
+                if not _.startswith(("_", "ak_")) and not _[0].isupper()
+            ]
+            + ["to_column", "dt"]
+        )
